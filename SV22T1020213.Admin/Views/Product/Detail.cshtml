@@ -1,0 +1,13 @@
+﻿@model SV22T1020213.DomainModels.Product
+
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<h2>Chi tiết sản phẩm: @Model.ProductName</h2>
+
+<p>Mô tả: @Model.ProductDescription</p>
+<p>Giá: @Model.Price</p>
+<!-- Thêm các field khác -->
+<a asp-action="ListAttributes" asp-route-id="@Model.ProductID" class="btn btn-info">Xem thuộc tính</a>
+<a asp-action="Index" class="btn btn-secondary">Quay lại</a>

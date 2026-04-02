@@ -1,0 +1,41 @@
+﻿@using SV22T1020213.Admin
+@using SV22T1020213.Admin.Models
+@using SV22T1020213.Models.Catalog
+@using SV22T1020213.Models.Common
+@using SV22T1020213.Models.DataDictionary
+@using SV22T1020213.Models.HR
+@using SV22T1020213.Models.Partner
+@using SV22T1020213.Models.Sales
+@using SV22T1020213.Models.Security
+@model Category
+
+@{
+    ViewBag.Title = "Thêm loại hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form method="post" action="~/Category/Create">
+
+    <div class="mb-3">
+        <label class="form-label">Tên loại hàng</label>
+        <input type="text"
+               name="CategoryName"
+               class="form-control"
+               required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Mô tả</label>
+        <textarea name="Description"
+                  class="form-control"
+                  rows="3"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-save"></i> Lưu
+    </button>
+
+    <a href="~/Category" class="btn btn-secondary">
+        Quay lại
+    </a>
+</form>

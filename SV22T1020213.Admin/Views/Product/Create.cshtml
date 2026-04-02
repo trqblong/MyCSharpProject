@@ -1,0 +1,84 @@
+﻿@model SV22T1020213.Models.Catalog.Product
+@{
+    ViewBag.Title = "Thêm mặt hàng mới";
+}
+
+@section PageToolBar {
+    <button type="submit" form="formEdit" class="btn btn-primary">
+        <i class="bi bi-save"></i> Lưu mặt hàng
+    </button>
+    <a href="~/Product" class="btn btn-secondary">Quay lại</a>
+}
+
+<div class="card">
+    <div class="card-body">
+        <form id="formEdit" asp-action="Save" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label asp-for="ProductName" class="form-label">Tên mặt hàng</label>
+                        <input asp-for="ProductName" class="form-control" autofocus />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CategoryID" class="form-label">Loại hàng</label>
+                            <select asp-for="CategoryID" class="form-select"></select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SupplierID" class="form-label">Nhà cung cấp</label>
+                            <select asp-for="SupplierID" class="form-select"></select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Unit" class="form-label">Đơn vị tính</label>
+                            <input asp-for="Unit" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Price" class="form-label">Giá bán</label>
+                            <input asp-for="Price" type="text" class="form-control money-input" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label d-block">Trạng thái</label>
+                            <div class="form-check form-switch">
+                                <input asp-for="IsSelling" type="checkbox" class="form-check-input" />
+                                <label asp-for="IsSelling" class="form-check-label">Đang bán</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ProductDescription" class="form-label">Mô tả</label>
+                        <textarea asp-for="ProductDescription" class="form-control" rows="4"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Ảnh đại diện</label>
+                    <input type="file" name="PhotoFile" class="form-control" accept="image/*" />
+                    <div class="mt-2 text-center">
+                        <img id="imgPreview" src="~/images/products/nophoto.png" class="img-thumbnail" style="max-height:200px;" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Preview ảnh
+        $("input[name='PhotoFile']").change(function () {
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $("#imgPreview").attr("src", e.target.result);
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    </script>
+}

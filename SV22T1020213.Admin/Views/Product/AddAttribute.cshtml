@@ -1,0 +1,28 @@
+﻿@model SV22T1020213.DomainModels.ProductAttribute
+
+@{
+    ViewData["Title"] = "Thêm thuộc tính";
+    int productId = ViewBag.ProductId;
+}
+
+<h2>Thêm thuộc tính cho sản phẩm ID @productId</h2>
+
+<form asp-action="AddAttribute" method="post">
+    <input type="hidden" asp-for="ProductID" value="@productId" />
+    <div class="form-group">
+        <label>Tên thuộc tính</label>
+        <input asp-for="AttributeName" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Giá trị</label>
+        <input asp-for="AttributeValue" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Thứ tự hiển thị</label>
+        <input asp-for="DisplayOrder" type="number" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a asp-action="ListAttributes" asp-route-id="@productId" class="btn btn-secondary">Hủy</a>
+</form>
+
+@Html.ValidationSummary()
