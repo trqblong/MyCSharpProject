@@ -1,0 +1,223 @@
+﻿@{
+    // Kiểm tra xem khách hàng đã đăng nhập chưa
+    bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+
+    // Lấy tên hiển thị từ Claim (nếu không có thì để "Khách hàng")
+    string displayName = User.FindFirst("DisplayName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
+
+    // Gán 1 ảnh mặc định cho khách hàng
+    string photo = "default-avatar.png";
+}
+
+<style>
+    
+    .custom-header {
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(255, 126, 179, 0.08); /* Đổ bóng hồng siêu nhạt */
+        padding: 12px 0;
+        z-index: 1030;
+    }
+
+    /* Logo */
+    .shop-logo {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        letter-spacing: -0.5px;
+    }
+
+    .shop-logo span {
+        color: var(--rose-accent);
+    }
+
+    /* Link điều hướng */
+    .header-link {
+        color: var(--text-dark) !important;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border-radius: 20px;
+        padding: 8px 16px !important;
+    }
+
+    .header-link:hover {
+        color: var(--rose-accent) !important;
+        background-color: #fff0f3;
+    }
+
+    /* Nút giỏ hàng */
+    .cart-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        border-radius: 30px;
+        background-color: #fff0f3;
+        color: var(--rose-accent);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 126, 179, 0.2);
+    }
+
+    .cart-button:hover {
+        background-color: var(--rose-accent);
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 126, 179, 0.3);
+    }
+
+    /* Huy hiệu số lượng giỏ hàng */
+    .cart-badge {
+        background-color: var(--rose-accent);
+        color: #ffffff;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        transition: all 0.3s ease;
+    }
+
+    .cart-button:hover .cart-badge {
+        background-color: #ffffff;
+        color: var(--rose-accent);
+    }
+
+    /* Dropdown User Menu */
+    .user-dropdown {
+        border-radius: 20px;
+        min-width: 240px;
+        margin-top: 15px !important;
+        background-color: #ffffff;
+        box-shadow: 0 15px 35px rgba(255, 126, 179, 0.15) !important;
+    }
+
+    .dropdown-item {
+        color: var(--text-dark);
+        font-weight: 500;
+        padding: 10px 20px;
+        transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background-color: #fff0f3;
+        color: var(--rose-accent);
+        transform: translateX(5px); /* Hiệu ứng trượt nhẹ sang phải khi hover */
+    }
+    
+    .dropdown-item.text-danger:hover {
+        color: #dc3545 !important;
+        background-color: #fff0f3;
+    }
+
+    .w-20px {
+        width: 20px; /* Căn chỉnh icon dropdown đều nhau */
+    }
+
+    /* Auth Buttons (Login / Register) */
+    .btn-login {
+        color: var(--text-dark);
+        font-weight: 600;
+        padding: 8px 20px;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+        color: var(--rose-accent);
+        background-color: #fff0f3;
+    }
+
+    .btn-register {
+        background-color: var(--rose-accent);
+        color: #ffffff;
+        font-weight: 600;
+        padding: 8px 24px;
+        border-radius: 30px;
+        box-shadow: 0 5px 15px rgba(255, 126, 179, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .btn-register:hover {
+        background-color: var(--pastel-pink);
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+</style>
+<nav class="custom-header navbar navbar-expand-lg sticky-top">
+    <div class="container-fluid px-4">
+        <div class="d-flex align-items-center gap-3">
+            <a href="~/" class="shop-logo text-decoration-none">
+                Long<span>Shop</span>
+            </a>
+
+            <ul class="navbar-nav d-none d-md-flex flex-row gap-2 ms-4">
+                <li class="nav-item">
+                    <a href="~/" class="nav-link header-link">Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a href="~/Product" class="nav-link header-link">Sản phẩm</a>
+                </li>
+            </ul>
+        </div>
+
+        <ul class="navbar-nav ms-auto align-items-center gap-3">
+            @if (isAuthenticated)
+            {
+                <li class="nav-item">
+                    <a href="~/Cart" class="cart-button text-decoration-none">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="d-none d-md-inline">Giỏ hàng</span>
+                        <span id="cartCount" class="badge cart-badge rounded-pill">0</span>
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown user-menu">
+                    <a href="#" class="nav-link user-trigger d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                        <img src="~/images/@photo" class="user-avatar rounded-circle shadow-sm" alt="Avatar" width="38" height="38" style="object-fit: cover;" />
+                        <span class="d-none d-md-inline user-name fw-semibold">@displayName</span>
+                        <i class="fa-solid fa-chevron-down small text-muted"></i>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end user-dropdown shadow-lg border-0">
+                        <li class="user-dropdown-header text-center p-3">
+                            <img src="~/images/@photo" class="rounded-circle shadow-sm mb-2 border border-2 border-white" width="70" height="70" alt="Avatar" style="object-fit: cover;" />
+                            <h6 class="mb-0 fw-bold" style="color: var(--text-dark);">@displayName</h6>
+                            <small class="text-muted">Tài khoản khách hàng</small>
+                        </li>
+                        <li><hr class="dropdown-divider opacity-50"></li>
+                        <li>
+                            <a class="dropdown-item" href="~/ShopAccount/Profile">
+                                <i class="fa-regular fa-id-badge me-2 w-20px text-center"></i> Thông tin cá nhân
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="~/ShopAccount/ChangePassword">
+                                <i class="fa-solid fa-unlock-keyhole me-2 w-20px text-center"></i> Đổi mật khẩu
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="~/Order">
+                                <i class="fa-solid fa-receipt me-2 w-20px text-center"></i> Đơn hàng của tôi
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider opacity-50"></li>
+                        <li>
+                            <a class="dropdown-item text-danger fw-semibold" href="~/ShopAccount/Logout">
+                                <i class="fa-solid fa-arrow-right-from-bracket me-2 w-20px text-center"></i> Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item d-flex gap-2">
+                    <a href="~/ShopAccount/Login" class="btn-login text-decoration-none">
+                        Đăng nhập
+                    </a>
+                    <a href="~/ShopAccount/Register" class="btn-register text-decoration-none">
+                        Đăng ký
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</nav>

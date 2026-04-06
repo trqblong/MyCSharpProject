@@ -19,5 +19,6 @@ namespace SV22T1020213.DataLayers.Interfaces
         Task<bool> ValidateEmailAsync(string email, int id = 0);
         Task<bool> ChangePasswordAsync(string email, string password);
         Task<bool> VerifyPasswordAsync(string email, string password);
+        Task<Customer?> GetByEmailAsync(string email);
     }
 }

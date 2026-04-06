@@ -1,5 +1,6 @@
 ﻿using SV22T1020213.Models.Common;
 using SV22T1020213.Models.Sales;
+using System.Threading.Tasks;
 
 namespace SV22T1020213.DataLayers.Interfaces
 {
@@ -72,5 +73,6 @@ namespace SV22T1020213.DataLayers.Interfaces
         /// <param name="productID"></param>
         /// <returns></returns>
         Task<bool> DeleteDetailAsync(int orderID, int productID);
+        Task<PagedResult<OrderViewInfo>> ListByCustomerAsync(int customerId, OrderSearchInput input);
     }
 }

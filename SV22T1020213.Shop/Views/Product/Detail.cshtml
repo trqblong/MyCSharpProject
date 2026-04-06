@@ -1,0 +1,272 @@
+﻿@model SV22T1020213.Models.Catalog.Product
+@{
+    ViewData["Title"] = Model.ProductName;
+    var attributes = ViewBag.Attributes as List<SV22T1020213.Models.Catalog.ProductAttribute>;
+    var photos = ViewBag.Photos as List<SV22T1020213.Models.Catalog.ProductPhoto>;
+}
+
+<style>
+    /* CSS nhúng trực tiếp màu Pastel Pink - Cam đào - Rose Accent */
+    :root {
+        --pastel-pink: #ffafbd;
+        --pastel-peach: #ffc3a0;
+        --rose-accent: #ff7eb3; /* Hồng đậm làm điểm nhấn */
+        --text-dark: #5a4b4f; /* Chữ màu nâu xám cho sang */
+    }
+
+    /* Hero Section với Gradient (Phần đầu trang) */
+    .hero-section {
+        background: linear-gradient(135deg, var(--pastel-pink) 0%, var(--pastel-peach) 100%);
+        padding: 80px 0;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(255, 175, 189, 0.3);
+        margin-bottom: 50px;
+    }
+
+    /* Tiêu đề Section (Có gạch chân hồng) */
+    .section-title {
+        font-weight: 800;
+        position: relative;
+        padding-bottom: 15px;
+        color: var(--text-dark);
+    }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--rose-accent);
+            border-radius: 4px;
+        }
+
+    /* Tiện ích bổ sung */
+    .text-rose {
+        color: var(--rose-accent) !important;
+    }
+
+    .btn-hero-custom {
+        color: var(--rose-accent) !important;
+    }
+
+        .btn-hero-custom:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.02);
+        }
+    .modern-card {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(255, 126, 179, 0.08);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .product-thumb {
+        border-radius: 12px;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+
+        .product-thumb:hover {
+            border-color: #ff7eb3;
+            transform: scale(1.05);
+        }
+
+    .btn-rose-gradient {
+        background: linear-gradient(135deg, #ffafbd 0%, #ff7eb3 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+    }
+
+        .btn-rose-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 126, 179, 0.3);
+            color: white;
+        }
+
+    .table-pastel th {
+        background-color: #fffafb !important;
+        color: #5a4b4f;
+        border-bottom: 2px solid #ffafbd;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .table-pastel td {
+        font-size: 0.95rem;
+    }
+
+    .table-pastel td, .table-pastel th {
+        border-color: rgba(255, 126, 179, 0.1);
+        padding: 10px 12px;
+    }
+
+    /* Ô nhập số lượng tối giản */
+    .qty-input {
+        border: 2px solid #fff0f3 !important;
+        color: #5a4b4f;
+        font-weight: 600;
+        font-size: 1.1rem;
+        background-color: #fafafa;
+        transition: all 0.3s;
+    }
+
+        .qty-input:focus {
+            box-shadow: none;
+            border-color: #ff7eb3 !important;
+            background-color: #fff;
+            outline: none;
+        }
+
+    .text-rose {
+        color: #ff7eb3 !important;
+    }
+
+    .product-desc {
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+</style>
+
+<div class="row mb-5">
+    <div class="col-md-5 mb-4 mb-md-0">
+        <div class="card modern-card p-3 sticky-top" style="top: 20px; z-index: 1;">
+            <div class="card-body text-center p-0">
+                <div class="rounded-4 overflow-hidden mb-3" style="border: 1px solid rgba(255,126,179,0.1);">
+                    <img id="mainImage" src="~/images/products/@Model.Photo" class="img-fluid w-100" style="object-fit: cover; max-height: 400px;" alt="@Model.ProductName">
+                </div>
+
+                @if (photos != null && photos.Any())
+                {
+                    <div class="row g-2">
+                        @foreach (var photo in photos.Where(p => !p.IsHidden).Take(4))
+                        {
+                            <div class="col-3">
+                                <img src="~/images/products/@photo.Photo"
+                                     class="img-fluid product-thumb shadow-sm"
+                                     style="cursor:pointer; height:70px; width:100%; object-fit:cover"
+                                     onclick="$('#mainImage').attr('src', '~/images/products/@photo.Photo')" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card modern-card h-100">
+            <div class="card-body p-4">
+                <h3 class="card-title fw-bold mb-2" style="color: #5a4b4f;">@Model.ProductName</h3>
+
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge rounded-pill px-3 py-2 fw-medium" style="background-color: #fff0f3; color: #ff7eb3; border: 1px solid rgba(255,175,189,0.5);">
+                        <i class="bi bi-tag-fill me-1"></i> @Model.CategoryName
+                    </span>
+                    <span class="badge rounded-pill px-3 py-2 fw-medium" style="background-color: #f8f9fa; color: #6c757d; border: 1px solid #dee2e6;">
+                        <i class="bi bi-building me-1"></i> @Model.SupplierName
+                    </span>
+                </div>
+
+                <div class="price-box py-2 px-3 rounded-4 mb-4 d-inline-block" style="background: linear-gradient(to right, #fffafb, #ffffff); border-left: 4px solid #ff7eb3; border-top: 1px solid #fff0f3; border-bottom: 1px solid #fff0f3; border-right: 1px solid #fff0f3;">
+                    <span class="fs-3 fw-bold" style="color: #ff7eb3;">@Model.Price.ToString("#,##0") đ</span>
+                    <span class="text-muted small ms-1">/ @Model.Unit</span>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase small" style="color: #5a4b4f; letter-spacing: 0.5px;">
+                        <i class="bi bi-info-circle text-rose me-2"></i>Mô tả sản phẩm
+                    </h6>
+                    <p class="text-muted product-desc mb-0">@Model.ProductDescription</p>
+                </div>
+
+                @if (attributes != null && attributes.Any())
+                {
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-uppercase small mb-3" style="color: #5a4b4f; letter-spacing: 0.5px;">
+                            <i class="bi bi-list-columns-reverse text-rose me-2"></i>Thông số kỹ thuật
+                        </h6>
+                        <div class="table-responsive rounded-4 border overflow-hidden" style="border-color: rgba(255, 126, 179, 0.15) !important;">
+                            <table class="table table-pastel mb-0">
+                                @foreach (var attr in attributes.OrderBy(a => a.DisplayOrder))
+                                {
+                                    <tr>
+                                        <th style="width:35%">@attr.AttributeName</th>
+                                        <td style="color: #6c757d;">@attr.AttributeValue</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <hr class="opacity-10 my-4" style="border-color: #ff7eb3;">
+
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <div style="width: 100px; height: 45px;">
+                        <input type="number" id="quantity" class="form-control qty-input text-center h-100 rounded-pill shadow-sm" value="1" min="1" title="Nhập số lượng">
+                    </div>
+                    <button class="btn btn-rose-gradient rounded-pill flex-grow-1 fw-bold shadow-sm" style="height: 45px; font-size: 1.05rem;" onclick="addToCart()">
+                        <i class="bi bi-cart-plus-fill me-2 fs-5"></i> Thêm vào giỏ hàng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Các hàm tăng/giảm số lượng đã được lược bỏ cho nhẹ code
+
+        function addToCart() {
+            var productId = @Model.ProductID;
+            var quantity = $('#quantity').val();
+
+            // Kiểm tra nếu người dùng vô tình nhập sai số lượng (số âm, số 0 hoặc để trống)
+            if (!quantity || quantity < 1) {
+                showToast('Vui lòng nhập số lượng hợp lệ (từ 1 trở lên)', 'danger');
+                $('#quantity').val(1).focus();
+                return;
+            }
+
+            var btn = $('.btn-rose-gradient');
+            var originalText = btn.html();
+            btn.html('<span class="spinner-border spinner-border-sm me-2"></span>Đang thêm...').prop('disabled', true);
+
+            $.post('@Url.Action("AddToCart", "Cart")', { productId: productId, quantity: quantity })
+                .done(function(response) {
+                    if (response.success) {
+                        $('#cartCount').text(response.cartCount);
+                        showToast('Đã thêm <b>@Model.ProductName</b> vào giỏ hàng', 'success');
+                    } else {
+                        showToast(response.message, 'danger');
+                    }
+                })
+                .fail(function() {
+                    showToast('Có lỗi xảy ra, vui lòng thử lại', 'danger');
+                })
+                .always(function() {
+                    btn.html(originalText).prop('disabled', false);
+                });
+        }
+
+        function showToast(message, type) {
+            var bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+            var toastHtml = `<div class="toast align-items-center text-white ${bgClass} border-0 position-fixed bottom-0 end-0 m-3 shadow-lg rounded-4" role="alert" style="z-index: 9999">
+                <div class="d-flex p-1">
+                    <div class="toast-body fs-6">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>`;
+            $('body').append(toastHtml);
+            var toast = new bootstrap.Toast($('.toast').last());
+            toast.show();
+            setTimeout(function() { $('.toast').last().remove(); }, 3000);
+        }
+    </script>
+}

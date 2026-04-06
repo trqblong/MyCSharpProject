@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SV22T1020213.DataLayers.Interfaces;
+using SV22T1020213.Models; // Bổ sung using này để dùng chung với CryptHelper/Customer nếu cần
 using SV22T1020213.Models.Common;
 using SV22T1020213.Models.Partner;
 
@@ -11,12 +12,19 @@ namespace SV22T1020213.DataLayers.SQLServer
         {
         }
 
+        // Đã cập nhật: Thêm logic password, IsLocked và CryptHelper.HashMD5
         public async Task<int> AddAsync(Customer data)
         {
             using var connection = GetConnection();
 
-            string sql = @"INSERT INTO Customers(CustomerName, ContactName, Province, Address, Phone, Email)
-                           VALUES(@CustomerName,@ContactName,@Province,@Address,@Phone,@Email);
+            // Tạo password mặc định nếu chưa có (hash MD5 của email)
+            if (string.IsNullOrWhiteSpace(data.Password))
+            {
+                data.Password = CryptHelper.HashMD5(data.Email);
+            }
+
+            string sql = @"INSERT INTO Customers(CustomerName, ContactName, Province, Address, Phone, Email, Password, IsLocked)
+                           VALUES(@CustomerName,@ContactName,@Province,@Address,@Phone,@Email,@Password,@IsLocked);
                            SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             return await connection.ExecuteScalarAsync<int>(sql, data);
@@ -44,6 +52,7 @@ namespace SV22T1020213.DataLayers.SQLServer
         {
             using var connection = GetConnection();
 
+            //  KHÔNG cập nhật Password trong update thông thường
             string sql = @"UPDATE Customers
                            SET CustomerName=@CustomerName,
                                ContactName=@ContactName,
@@ -116,6 +125,7 @@ namespace SV22T1020213.DataLayers.SQLServer
                 DataItems = data.ToList()
             };
         }
+
         public async Task<bool> ChangePasswordAsync(string email, string password)
         {
             using var connection = GetConnection();
@@ -126,6 +136,7 @@ namespace SV22T1020213.DataLayers.SQLServer
 
             return await connection.ExecuteAsync(sql, new { email, password }) > 0;
         }
+
         public async Task<bool> VerifyPasswordAsync(string email, string password)
         {
             using var connection = GetConnection();
@@ -137,6 +148,14 @@ namespace SV22T1020213.DataLayers.SQLServer
             int count = await connection.ExecuteScalarAsync<int>(sql, new { email, password });
 
             return count > 0;
+        }
+
+        
+        public async Task<Customer?> GetByEmailAsync(string email)
+        {
+            using var connection = GetConnection();
+            string sql = "SELECT * FROM Customers WHERE Email = @email";
+            return await connection.QueryFirstOrDefaultAsync<Customer>(sql, new { email });
         }
     }
 }

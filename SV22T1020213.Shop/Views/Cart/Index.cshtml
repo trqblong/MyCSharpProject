@@ -1,0 +1,300 @@
+﻿@model List<SV22T1020213.Shop.Models.CartItem>
+@{
+    ViewData["Title"] = "Giỏ hàng của tôi";
+    // Đã xóa dòng tính total bằng C# ở đây để tránh lỗi và nhường lại cho Javascript tính
+}
+
+<style>
+    /* CSS nhúng trực tiếp màu Pastel Pink - Cam đào - Rose Accent */
+    :root {
+        --pastel-pink: #ffafbd;
+        --pastel-peach: #ffc3a0;
+        --rose-accent: #ff7eb3; /* Hồng đậm làm điểm nhấn */
+        --text-dark: #5a4b4f; /* Chữ màu nâu xám cho sang */
+    }
+
+    /* Hero Section với Gradient (Phần đầu trang) */
+    .hero-section {
+        background: linear-gradient(135deg, var(--pastel-pink) 0%, var(--pastel-peach) 100%);
+        padding: 80px 0;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(255, 175, 189, 0.3);
+        margin-bottom: 50px;
+    }
+
+    /* Tiêu đề Section (Có gạch chân hồng) */
+    .section-title {
+        font-weight: 800;
+        position: relative;
+        padding-bottom: 15px;
+        color: var(--text-dark);
+    }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--rose-accent);
+            border-radius: 4px;
+        }
+
+    /* Tiện ích bổ sung */
+    .text-rose {
+        color: var(--rose-accent) !important;
+    }
+
+    .btn-hero-custom {
+        color: var(--rose-accent) !important;
+    }
+
+        .btn-hero-custom:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.02);
+        }
+    .modern-card {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(255, 126, 179, 0.08);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .pastel-header {
+        background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
+        color: white;
+        padding: 16px 24px;
+        border-bottom: none;
+    }
+
+    .table-pastel th {
+        background-color: #fffafb !important;
+        color: #5a4b4f;
+        border-bottom: 2px solid #ffafbd;
+        font-weight: 600;
+    }
+
+    .table-pastel td {
+        vertical-align: middle;
+        border-color: rgba(255, 126, 179, 0.1);
+        color: #5a4b4f;
+    }
+
+    .btn-rose-gradient {
+        background: linear-gradient(135deg, #ffafbd 0%, #ff7eb3 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+    }
+
+        .btn-rose-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 126, 179, 0.3);
+            color: white;
+        }
+
+    .btn-outline-rose {
+        border: 1px solid #ff7eb3;
+        color: #ff7eb3;
+        transition: all 0.3s;
+        background: transparent;
+    }
+
+        .btn-outline-rose:hover {
+            background-color: #ff7eb3;
+            color: white;
+        }
+
+    .qty-input {
+        border: 1px solid #ffafbd !important;
+        color: #5a4b4f;
+        font-weight: 600;
+        border-radius: 8px;
+        background-color: #fffafb;
+    }
+
+        .qty-input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 126, 179, 0.25);
+            border-color: #ff7eb3 !important;
+            background-color: #fff;
+        }
+
+    .text-rose {
+        color: #ff7eb3 !important;
+    }
+
+    .cart-img {
+        border-radius: 12px;
+        border: 1px solid rgba(255, 126, 179, 0.1);
+    }
+
+    /* BỔ SUNG CSS CHO CHECKBOX TRÔNG XỊN HƠN */
+    .custom-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: #ff7eb3;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="card modern-card">
+        <div class="card-header pastel-header">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-cart3 me-2"></i> Giỏ hàng của bạn</h4>
+        </div>
+        <div class="card-body p-4 p-md-5">
+
+            @if (Model == null || Model.Count == 0)
+            {
+                <div class="alert text-center rounded-4 py-5 shadow-sm mb-0" style="background-color: #fff0f3; border: 2px dashed #ffafbd;">
+                    <i class="bi bi-cart-x fs-1 d-block mb-3" style="color: #ff7eb3;"></i>
+                    <h5 class="fw-bold" style="color: #5a4b4f;">Giỏ hàng của bạn đang trống!</h5>
+                    <p class="text-muted mb-4">Có vẻ như bạn chưa thêm sản phẩm nào vào giỏ.</p>
+                    <a href="@Url.Action("Index", "Product")" class="btn btn-rose-gradient rounded-pill px-5 py-2 fw-bold">
+                        <i class="bi bi-bag-heart me-1"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive rounded-4 border overflow-hidden mb-4" style="border-color: rgba(255, 126, 179, 0.15) !important;">
+                    <table class="table table-hover table-pastel mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 50px;">
+                                    <input type="checkbox" id="selectAll" class="custom-checkbox" checked>
+                                </th>
+                                <th>Sản phẩm</th>
+                                <th class="text-center">Đơn vị</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-end">Đơn giá</th>
+                                <th class="text-end">Thành tiền</th>
+                                <th class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" class="item-checkbox custom-checkbox"
+                                               value="@item.ProductID"
+                                               data-price="@item.TotalPrice" checked>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/images/products/@item.Photo" class="cart-img me-3 shadow-sm" style="width: 65px; height: 65px; object-fit: cover;">
+                                            <div><strong style="color: #5a4b4f; font-size: 1.05rem;">@item.ProductName</strong></div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">@item.Unit</td>
+                                    <td class="text-center" style="width: 130px;">
+                                        <form method="post" asp-action="UpdateCart" class="d-flex justify-content-center">
+                                            <input type="hidden" name="productId" value="@item.ProductID" />
+                                            <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control qty-input text-center" style="width: 75px;" onchange="this.form.submit()" />
+                                        </form>
+                                    </td>
+                                    <td class="text-end">@item.SalePrice.ToString("#,##0") đ</td>
+                                    <td class="text-end fw-bold text-rose fs-6">@item.TotalPrice.ToString("#,##0") đ</td>
+                                    <td class="text-center">
+                                        <form method="post" asp-action="RemoveFromCart" style="display:inline;">
+                                            <input type="hidden" name="productId" value="@item.ProductID" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle shadow-sm" style="width: 35px; height: 35px;" onclick="return confirm('Xóa sản phẩm này?')">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot style="background-color: #fffafb;">
+                            <tr>
+                                <td colspan="5" class="text-end fw-bold fs-5" style="color: #5a4b4f; padding: 15px;">Tổng tiền dự tính:</td>
+                                <td class="text-end fw-bold fs-4 text-rose" style="padding: 15px;" id="dynamicTotal">0 đ</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <a href="@Url.Action("Index", "Product")" class="btn btn-light rounded-pill px-4 shadow-sm fw-medium" style="color: #5a4b4f; border: 1px solid #dee2e6;">
+                        <i class="bi bi-arrow-left me-1"></i> Tiếp tục mua sắm
+                    </a>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" id="btnCheckout" class="btn btn-rose-gradient rounded-pill px-5 fs-5">
+                            <i class="bi bi-credit-card-fill me-2"></i> Mua hàng (<span id="selectedCount">0</span>)
+                        </button>
+                    </div>
+                </div>
+
+                <form id="checkoutForm" method="post" asp-action="PrepareCheckout" style="display: none;">
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Hàm tính lại tổng tiền dựa trên các Checkbox đang được tích
+            function calculateTotal() {
+                let total = 0;
+                let count = 0;
+                $('.item-checkbox:checked').each(function () {
+                    total += parseFloat($(this).data('price'));
+                    count++;
+                });
+
+                // Định dạng hiển thị tiền Việt Nam
+                $('#dynamicTotal').text(total.toLocaleString('vi-VN') + ' đ');
+                $('#selectedCount').text(count);
+
+                // Đồng bộ checkbox "Chọn tất cả"
+                let allChecked = $('.item-checkbox').length > 0 && $('.item-checkbox:not(:checked)').length === 0;
+                $('#selectAll').prop('checked', allChecked);
+            }
+
+            // Gọi hàm tính tiền ngay khi load trang
+            calculateTotal();
+
+            // Sự kiện click Checkbox "Chọn tất cả"
+            $('#selectAll').change(function () {
+                $('.item-checkbox').prop('checked', this.checked);
+                calculateTotal();
+            });
+
+            // Sự kiện click từng Checkbox con
+            $('.item-checkbox').change(function () {
+                calculateTotal();
+            });
+
+            // Xử lý khi bấm nút "Mua hàng"
+            $('#btnCheckout').click(function () {
+                let selectedItems = $('.item-checkbox:checked');
+
+                if (selectedItems.length === 0) {
+                    alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                    return;
+                }
+
+                // Dọn dẹp form ẩn cũ
+                let form = $('#checkoutForm');
+                form.empty();
+
+                // Nhét các ID sản phẩm đã chọn vào form ẩn
+                selectedItems.each(function () {
+                    form.append('<input type="hidden" name="selectedIds" value="' + $(this).val() + '" />');
+                });
+
+                // Submit form lên Controller
+                form.submit();
+            });
+        });
+    </script>
+}

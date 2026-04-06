@@ -1,0 +1,160 @@
+﻿@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "_LayoutEmpty";  // Vẫn dùng Layout rỗng
+}
+
+<style>
+    /* CSS Dành riêng cho trang Login (LayoutEmpty) */
+    .modern-card {
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 15px 40px rgba(255, 126, 179, 0.15);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .shop-logo {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #ff7eb3;
+        letter-spacing: -1px;
+        display: inline-block;
+    }
+
+        .shop-logo span {
+            color: #ffc3a0;
+        }
+
+    .form-label {
+        font-weight: 600;
+        color: #5a4b4f;
+        margin-bottom: 8px;
+    }
+
+    /* Input Group bo tròn tinh tế */
+    .input-group-text {
+        border-radius: 12px 0 0 12px;
+        background-color: #fff0f3;
+        color: #ff7eb3;
+        border: 1px solid #dee2e6;
+        border-right: none;
+    }
+
+    .form-control {
+        border-color: #dee2e6;
+        color: #5a4b4f;
+        border-radius: 0 12px 12px 0;
+        padding: 12px 15px;
+        border-left: none;
+    }
+
+    .input-group:focus-within .input-group-text, .input-group:focus-within .form-control {
+        border-color: #ff7eb3;
+        box-shadow: none;
+    }
+
+    .btn-rose-gradient {
+        background: linear-gradient(135deg, #ffafbd 0%, #ff7eb3 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+        border-radius: 30px;
+        padding: 12px 25px;
+        font-weight: 600;
+    }
+
+        .btn-rose-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 126, 179, 0.4);
+            color: white;
+        }
+
+    .btn-outline-rose {
+        border: 2px solid #ff7eb3;
+        color: #ff7eb3;
+        border-radius: 30px;
+        padding: 10px 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+        background: transparent;
+    }
+
+        .btn-outline-rose:hover {
+            background-color: #ff7eb3;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 126, 179, 0.3);
+        }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="col-md-5 col-sm-8 col-11">
+        <div class="card modern-card my-5">
+            <div class="card-body p-4 p-md-5">
+
+                <div class="text-center mb-4 pb-2">
+                    <a href="~/" class="shop-logo text-decoration-none">
+                        Long<span>Shop</span>
+                    </a>
+                    <p class="text-muted mt-2 small">Chào mừng bạn quay trở lại!</p>
+                </div>
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert bg-success text-white rounded-4 border-0 shadow-sm mb-4 alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Error))
+                {
+                    <div class="alert bg-danger text-white rounded-4 border-0 shadow-sm mb-4 alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.Error
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form method="post" asp-action="Login">
+                    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                    <div class="mb-4">
+                        <label class="form-label">Địa chỉ Email</label>
+                        <div class="input-group shadow-sm rounded-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-envelope-heart"></i>
+                            </span>
+                            <input type="email" name="email" class="form-control" value="@ViewBag.Email" placeholder="example@mail.com" autofocus required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label mb-0">Mật khẩu</label>
+                        </div>
+                        <div class="input-group shadow-sm rounded-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock"></i>
+                            </span>
+                            <input type="password" name="password" class="form-control" placeholder="••••••" required />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-rose-gradient w-100 fs-5 mt-2">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Đăng nhập
+                    </button>
+                </form>
+
+                <hr class="my-4" style="border-color: rgba(255, 126, 179, 0.2);" />
+
+                <div class="text-center">
+                    <p class="mb-3 text-muted">Chưa có tài khoản?</p>
+                    <a asp-action="Register" class="btn btn-outline-rose w-100 d-block text-decoration-none">
+                        <i class="bi bi-person-heart me-2"></i> Đăng ký ngay
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

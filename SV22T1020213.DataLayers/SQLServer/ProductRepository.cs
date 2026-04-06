@@ -80,33 +80,53 @@ namespace SV22T1020213.DataLayers.SQLServer
                 where += " AND P.ProductName LIKE @search ";
 
             if (input.CategoryID > 0)
-                where += " AND P.CategoryID = @CategoryID "; 
+                where += " AND P.CategoryID = @CategoryID ";
 
             if (input.SupplierID > 0)
-                where += " AND P.SupplierID = @SupplierID "; 
+                where += " AND P.SupplierID = @SupplierID ";
 
             if (input.MinPrice > 0)
-                where += " AND P.Price >= @MinPrice "; 
+                where += " AND P.Price >= @MinPrice ";
 
             if (input.MaxPrice > 0)
-                where += " AND P.Price <= @MaxPrice "; 
+                where += " AND P.Price <= @MaxPrice ";
+
+            // BƯỚC 4: THÊM LOGIC ĐỊNH NGHĨA CỘT SẮP XẾP TẠI ĐÂY
+            string orderBy = "P.ProductID DESC"; // Mặc định là Mới nhất (ID lớn nhất)
+            if (!string.IsNullOrEmpty(input.SortOrder))
+            {
+                switch (input.SortOrder.ToLower())
+                {
+                    case "price_asc":
+                        orderBy = "P.Price ASC";
+                        break;
+                    case "price_desc":
+                        orderBy = "P.Price DESC";
+                        break;
+                    case "newest":
+                    default:
+                        orderBy = "P.ProductID DESC";
+                        break;
+                }
+            }
 
             string sqlCount = $@"
-                                SELECT COUNT(*)
-                                FROM Products P
-                                {where}";
+                    SELECT COUNT(*)
+                    FROM Products P
+                    {where}";
 
+            // Sửa ORDER BY P.ProductName thành ORDER BY {orderBy}
             string sqlData = $@"
-                                SELECT P.ProductID, P.ProductName, P.Unit, P.Price, P.Photo,
-                                       P.CategoryID, P.SupplierID, P.IsSelling,
-                                       C.CategoryName, S.SupplierName
-                                FROM Products P
-                                LEFT JOIN Categories C ON P.CategoryID = C.CategoryID
-                                LEFT JOIN Suppliers S ON P.SupplierID = S.SupplierID
-                                {where}
-                                ORDER BY P.ProductName
-                                OFFSET @offset ROWS
-                                FETCH NEXT @pagesize ROWS ONLY";
+                    SELECT P.ProductID, P.ProductName, P.Unit, P.Price, P.Photo,
+                            P.CategoryID, P.SupplierID, P.IsSelling,
+                            C.CategoryName, S.SupplierName
+                    FROM Products P
+                    LEFT JOIN Categories C ON P.CategoryID = C.CategoryID
+                    LEFT JOIN Suppliers S ON P.SupplierID = S.SupplierID
+                    {where}
+                    ORDER BY {orderBy} 
+                    OFFSET @offset ROWS
+                    FETCH NEXT @pagesize ROWS ONLY";
 
             var param = new
             {

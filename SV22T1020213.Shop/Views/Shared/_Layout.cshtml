@@ -1,0 +1,88 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Long Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="bg-light">
+
+    @await Html.PartialAsync("_Header")
+
+    <main class="container my-4 flex-grow-1">
+        @{
+            // Khởi tạo các biến cho Header
+            bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+            string displayName = User.FindFirst("DisplayName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
+            string photo = "default-avatar.png";
+        }
+
+        <div class="main-content">
+            @RenderBody()
+        </div>
+    </main>
+
+    @await Html.PartialAsync("_Footer")
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+            style="position:fixed;bottom:30px;right:30px;width:50px;height:50px;border-radius:50%;background:#fca311;color:white;border:none;cursor:pointer;display:none;box-shadow:0 4px 15px rgba(252, 163, 17, 0.4);transition:all 0.3s ease;z-index:999">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <div class="modal fade" id="dialogModal" tabindex="-1" aria-hidden="true" style="display:none;">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/shop.js"></script>
+
+    <script>
+        // Scroll to top button
+        window.addEventListener('scroll', function() {
+            var btn = document.getElementById('scrollToTop');
+            if (window.scrollY > 300) {
+                btn.style.display = 'block';
+            } else {
+                btn.style.display = 'none';
+            }
+        });
+
+        // Update cart count on page load
+        function updateCartCount() {
+            $.get('/Cart/GetCartCount', function(data) {
+                $('#cartCount').text(data.count);
+            });
+        }
+
+        $(document).ready(function() {
+            updateCartCount();
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

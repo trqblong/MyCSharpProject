@@ -1,0 +1,146 @@
+﻿@{
+    ViewData["Title"] = "Đặt hàng thành công";
+    int orderId = ViewBag.OrderId;
+}
+
+<style>
+    /* CSS Hồng Pastel */
+    :root {
+        --pastel-pink: #ffafbd;
+        --pastel-peach: #ffc3a0;
+        --rose-accent: #ff7eb3; /* Hồng đậm làm điểm nhấn */
+        --text-dark: #5a4b4f; /* Chữ màu nâu xám cho sang */
+    }
+
+    /* Hero Section với Gradient (Phần đầu trang) */
+    .hero-section {
+        background: linear-gradient(135deg, var(--pastel-pink) 0%, var(--pastel-peach) 100%);
+        padding: 80px 0;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(255, 175, 189, 0.3);
+        margin-bottom: 50px;
+    }
+
+    /* Tiêu đề Section (Có gạch chân hồng) */
+    .section-title {
+        font-weight: 800;
+        position: relative;
+        padding-bottom: 15px;
+        color: var(--text-dark);
+    }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--rose-accent);
+            border-radius: 4px;
+        }
+
+    /* Tiện ích bổ sung */
+    .text-rose {
+        color: var(--rose-accent) !important;
+    }
+
+    .btn-hero-custom {
+        color: var(--rose-accent) !important;
+    }
+
+        .btn-hero-custom:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.02);
+        }
+    .modern-card {
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 15px 40px rgba(255, 126, 179, 0.15);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .btn-rose-gradient {
+        background: linear-gradient(135deg, #ffafbd 0%, #ff7eb3 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+        border-radius: 30px;
+        font-weight: 600;
+        padding: 12px 25px;
+    }
+
+        .btn-rose-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 126, 179, 0.4);
+            color: white;
+        }
+
+    .btn-outline-rose {
+        border: 2px solid #ffafbd;
+        color: #5a4b4f;
+        border-radius: 30px;
+        padding: 10px 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+        background: transparent;
+    }
+
+        .btn-outline-rose:hover {
+            background-color: #fff0f3;
+            border-color: #ff7eb3;
+            color: #ff7eb3;
+            transform: translateY(-2px);
+        }
+
+    .success-icon-bg {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #fff0f3 0%, #ffc3a0 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        box-shadow: 0 10px 25px rgba(255, 126, 179, 0.2);
+    }
+</style>
+
+<div class="row justify-content-center my-5">
+    <div class="col-md-8 col-lg-7 text-center">
+        <div class="card modern-card">
+            <div class="card-body py-5 px-4 p-md-5">
+
+                <div class="success-icon-bg mb-4">
+                    <i class="bi bi-check-lg" style="font-size: 70px; color: #ff7eb3; text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);"></i>
+                </div>
+
+                <h2 class="fw-bold mb-3" style="color: #5a4b4f;">Đặt hàng thành công!</h2>
+
+                <p class="lead text-muted mb-4">Cảm ơn bạn đã tin tưởng và mua sắm tại <strong>Long Shop</strong></p>
+
+                <div class="d-inline-block p-3 px-4 rounded-4 mb-4 shadow-sm" style="background-color: #fffafb; border: 1px dashed #ffafbd;">
+                    <span class="text-muted d-block mb-1">Mã đơn hàng của bạn là:</span>
+                    <strong class="fs-2" style="color: #ff7eb3; letter-spacing: 1px;">#@orderId</strong>
+                </div>
+
+                <p class="text-muted mb-5 px-md-4">
+                    Chúng tôi đã ghi nhận thông tin và sẽ sớm liên hệ với bạn qua số điện thoại để xác nhận đơn hàng trong thời gian sớm nhất.
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-center gap-3 mt-2">
+                    <a href="@Url.Action("Detail", "Order", new { id = orderId })" class="btn btn-outline-rose px-4 py-2">
+                        <i class="bi bi-receipt-cutoff me-2"></i> Theo dõi đơn hàng
+                    </a>
+                    <a href="@Url.Action("Index", "Product")" class="btn btn-rose-gradient px-5 py-2">
+                        <i class="bi bi-bag-heart-fill me-2"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+
+            </div>
+            <div style="height: 6px; background: linear-gradient(90deg, #ffafbd 0%, #ffc3a0 100%);"></div>
+        </div>
+    </div>
+</div>

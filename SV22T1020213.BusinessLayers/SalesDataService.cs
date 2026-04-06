@@ -160,9 +160,9 @@ namespace SV22T1020213.BusinessLayers
         }
 
         /// <summary>
-        /// Hủy đơn hàng
+        /// Hủy đơn hàng (Dành cho phía Admin / Nhân viên xử lý)
         /// </summary>
-        public static async Task<bool> CancelOrderAsync(int orderID, int employeeID) // <-- Thêm tham số employeeID
+        public static async Task<bool> CancelOrderAsync(int orderID, int employeeID)
         {
             var order = await orderDB.GetAsync(orderID);
             if (order == null) return false;
@@ -172,8 +172,8 @@ namespace SV22T1020213.BusinessLayers
                 order.Status != OrderStatusEnum.Shipping)
                 return false;
 
-            // Nếu đơn hàng chưa từng có ai duyệt (hủy ngay lúc Mới), ghi nhận luôn người Hủy là người xử lý
-            if (order.EmployeeID == null)
+            // SỬA Ở ĐÂY: Thêm điều kiện employeeID > 0 để chắc chắn ID hợp lệ
+            if (order.EmployeeID == null && employeeID > 0)
             {
                 order.EmployeeID = employeeID;
                 order.AcceptTime = DateTime.Now;
@@ -312,6 +312,31 @@ namespace SV22T1020213.BusinessLayers
             return await orderDB.DeleteDetailAsync(orderID, productID);
         }
 
+        /// <summary>
+        /// Hủy đơn hàng từ phía khách hàng (Giao diện Shop)
+        /// Không yêu cầu và không can thiệp vào EmployeeID để tránh lỗi Khóa ngoại
+        /// </summary>
+        public static async Task<bool> CancelOrderShop(int orderID)
+        {
+            var order = await orderDB.GetAsync(orderID);
+            if (order == null) return false;
+
+            // Khách hàng thường chỉ được phép hủy khi đơn ở trạng thái Mới (New) hoặc Đã duyệt (Accepted)
+            if (order.Status != OrderStatusEnum.New &&
+                order.Status != OrderStatusEnum.Accepted)
+                return false;
+
+            // Chỉ cập nhật thời gian kết thúc và trạng thái, GIỮ NGUYÊN EmployeeID (bỏ qua nhân viên)
+            order.FinishedTime = DateTime.Now;
+            order.Status = OrderStatusEnum.Cancelled;
+
+            return await orderDB.UpdateAsync(order);
+        }
+
         #endregion
+        public static async Task<PagedResult<OrderViewInfo>> ListOrdersByCustomerAsync(int customerId, OrderSearchInput input)
+        {
+            return await orderDB.ListByCustomerAsync(customerId, input);
+        }
     }
 }

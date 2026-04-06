@@ -1,0 +1,111 @@
+﻿<!-- Views/Shared/_Layout.cshtml (Shop Layout) -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Long Shop</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/shop.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/Shop/Home">
+                    <i class="bi bi-shop"></i> Long Shop
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Shop/Home">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Shop/Home/Categories">Danh mục</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex me-2" action="/Shop/ShopHome/Search" method="get">
+                        <input class="form-control me-1" type="search" name="keyword" placeholder="Tìm kiếm..." style="width: 250px;">
+                        <button class="btn btn-outline-light" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                    <div class="dropdown me-2">
+                        <a href="#" class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <span>@User.FindFirst("DisplayName")?.Value</span>
+                            }
+                            else
+                            {
+                                <span>Tài khoản</span>
+                            }
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <li><a class="dropdown-item" href="/Shop/Account/ChangePassword">Đổi mật khẩu</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/Shop/Account/Logout">Đăng xuất</a></li>
+                            }
+                            else
+                            {
+                                <li><a class="dropdown-item" href="/Shop/Account/Login">Đăng nhập</a></li>
+                                <li><a class="dropdown-item" href="/Shop/Account/Register">Đăng ký</a></li>
+                            }
+                        </ul>
+                    </div>
+                    <a href="/Shop/Cart" class="btn btn-outline-light position-relative">
+                        <i class="bi bi-cart"></i>
+                        <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            0
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-4">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Lam Shop</h5>
+                    <p>Chuyên cung cấp sản phẩm chất lượng cao</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liên hệ</h5>
+                    <p><i class="bi bi-geo-alt"></i> 77 Nguyễn Huệ, Huế</p>
+                    <p><i class="bi bi-telephone"></i> 0234.3.882.111</p>
+                    <p><i class="bi bi-envelope"></i> contact@lamshop.com</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Kết nối</h5>
+                    <a href="#" class="text-white me-2"><i class="bi bi-facebook fs-4"></i></a>
+                    <a href="#" class="text-white me-2"><i class="bi bi-instagram fs-4"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-youtube fs-4"></i></a>
+                </div>
+            </div>
+            <hr class="bg-secondary">
+            <div class="text-center">
+                <p>&copy; @DateTime.Now.Year Long Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/js/shop.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

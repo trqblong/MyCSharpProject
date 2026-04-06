@@ -1,0 +1,218 @@
+﻿@using SV22T1020213.Admin
+@model List<SV22T1020213.Shop.Models.CartItem>
+@{
+    ViewData["Title"] = "Thanh toán";
+    decimal total = Model.Sum(x => x.TotalPrice);
+}
+
+<style>
+    /* CSS Hồng Pastel - Cam Đào */
+    :root {
+        --pastel-pink: #ffafbd;
+        --pastel-peach: #ffc3a0;
+        --rose-accent: #ff7eb3; /* Hồng đậm làm điểm nhấn */
+        --text-dark: #5a4b4f; /* Chữ màu nâu xám cho sang */
+    }
+
+    /* Hero Section với Gradient (Phần đầu trang) */
+    .hero-section {
+        background: linear-gradient(135deg, var(--pastel-pink) 0%, var(--pastel-peach) 100%);
+        padding: 80px 0;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(255, 175, 189, 0.3);
+        margin-bottom: 50px;
+    }
+
+    /* Tiêu đề Section (Có gạch chân hồng) */
+    .section-title {
+        font-weight: 800;
+        position: relative;
+        padding-bottom: 15px;
+        color: var(--text-dark);
+    }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--rose-accent);
+            border-radius: 4px;
+        }
+
+    /* Tiện ích bổ sung */
+    .text-rose {
+        color: var(--rose-accent) !important;
+    }
+
+    .btn-hero-custom {
+        color: var(--rose-accent) !important;
+    }
+
+        .btn-hero-custom:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.02);
+        }
+    .modern-card {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(255, 126, 179, 0.1);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .pastel-header {
+        background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
+        color: white;
+        padding: 16px 24px;
+        border-bottom: none;
+    }
+
+    .pastel-header-alt {
+        background: linear-gradient(135deg, #ffc3a0 0%, #ffafbd 100%);
+        color: white;
+        padding: 16px 24px;
+        border-bottom: none;
+    }
+
+    .form-control, .form-select {
+        border-color: #dee2e6;
+        color: #5a4b4f;
+        border-radius: 12px;
+        padding: 12px 15px;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #ff7eb3;
+            box-shadow: 0 0 0 0.25rem rgba(255, 126, 179, 0.25);
+        }
+
+    .form-label {
+        font-weight: 600;
+        color: #5a4b4f;
+        margin-bottom: 8px;
+    }
+
+    .btn-rose-gradient {
+        background: linear-gradient(135deg, #ffafbd 0%, #ff7eb3 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+        border-radius: 30px;
+        font-weight: 600;
+    }
+
+        .btn-rose-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 126, 179, 0.4);
+            color: white;
+        }
+
+    .text-rose {
+        color: #ff7eb3 !important;
+    }
+
+    .order-item-border {
+        border-bottom: 1px dashed rgba(255, 126, 179, 0.3);
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+        .order-item-border:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+</style>
+
+<div class="row mb-5 mt-3">
+    <div class="col-md-7 col-lg-8 mb-4 mb-md-0">
+        <div class="card modern-card h-100">
+            <div class="card-header pastel-header">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-truck me-2"></i> Thông tin giao hàng</h5>
+            </div>
+            <div class="card-body p-4 p-lg-5">
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert bg-danger text-white rounded-4 border-0 shadow-sm mb-4">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+                    </div>
+                }
+
+                <form method="post" asp-action="Checkout" id="checkoutForm">
+                    <div class="mb-4">
+                        <label class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+                        <div class="input-group shadow-sm rounded-4">
+                            <span class="input-group-text bg-light border-end-0 rounded-start-4"><i class="bi bi-geo-alt text-muted"></i></span>
+                            <select name="deliveryProvince" class="form-select border-start-0" required>
+                                <option value="">-- Vui lòng chọn tỉnh/thành phố --</option>
+                                @foreach (var province in await SelectListHelper.Provinces())
+                                {
+                                    <option value="@province.Value">@province.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Địa chỉ chi tiết <span class="text-danger">*</span></label>
+                        <textarea name="deliveryAddress" class="form-control shadow-sm" rows="3" placeholder="Ví dụ: Số 77 Nguyễn Huệ, Phường Phú Nhuận..." required></textarea>
+                    </div>
+
+                    <div class="alert mt-4 rounded-4 shadow-sm" style="background-color: #fff0f3; color: #ff7eb3; border: 1px dashed #ffafbd;">
+                        <i class="bi bi-info-circle-fill me-2"></i> Đơn hàng sẽ được chuyển đến bộ phận xử lý ngay sau khi bạn xác nhận.
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5 col-lg-4">
+        <div class="card modern-card h-100 d-flex flex-column">
+            <div class="card-header pastel-header-alt">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-receipt-cutoff me-2"></i> Tóm tắt đơn hàng</h5>
+            </div>
+            <div class="card-body p-4 d-flex flex-column">
+
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom" style="border-color: rgba(255, 126, 179, 0.2) !important;">
+                    <span class="text-muted fw-medium">Tổng số sản phẩm:</span>
+                    <span class="badge rounded-pill fs-6" style="background-color: #fff0f3; color: #ff7eb3; border: 1px solid #ffafbd;">
+                        @Model.Sum(x => x.Quantity) mục
+                    </span>
+                </div>
+
+                <div class="flex-grow-1 overflow-auto pe-2 mb-4" style="max-height: 250px;">
+                    @foreach (var item in Model)
+                    {
+                        <div class="d-flex justify-content-between align-items-start order-item-border">
+                            <div class="pe-3">
+                                <strong style="color: #5a4b4f; font-size: 0.95rem;">@item.ProductName</strong>
+                                <div class="text-muted small">Số lượng: @item.Quantity</div>
+                            </div>
+                            <span class="fw-bold" style="color: #5a4b4f; white-space: nowrap;">@item.TotalPrice.ToString("#,##0") đ</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="p-3 rounded-4 mt-auto" style="background: linear-gradient(to right, #fffafb, #ffffff); border-left: 4px solid #ff7eb3; border-top: 1px solid #fff0f3; border-bottom: 1px solid #fff0f3; border-right: 1px solid #fff0f3;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-uppercase" style="color: #5a4b4f; font-size: 0.9rem;">Tổng thanh toán</span>
+                        <span class="fs-4 fw-bold text-rose">@total.ToString("#,##0") đ</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer bg-white border-0 p-4 pt-0">
+                <button type="submit" form="checkoutForm" class="btn btn-rose-gradient w-100 py-3 fs-5 shadow-sm">
+                    <i class="bi bi-check-circle-fill me-2"></i> Xác nhận đặt hàng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

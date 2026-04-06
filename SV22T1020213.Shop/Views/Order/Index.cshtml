@@ -1,0 +1,283 @@
+﻿@using SV22T1020213.Models.Sales
+@model SV22T1020213.Models.Common.PagedResult<SV22T1020213.Models.Sales.OrderViewInfo>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    int? currentStatus = ViewBag.CurrentStatus;
+}
+
+<style>
+    /* CSS đồng bộ tone Hồng Pastel - Cam đào */
+    :root {
+        --pastel-pink: #ffafbd;
+        --pastel-peach: #ffc3a0;
+        --rose-accent: #ff7eb3; /* Hồng đậm làm điểm nhấn */
+        --text-dark: #5a4b4f; /* Chữ màu nâu xám cho sang */
+    }
+
+    /* Hero Section với Gradient (Phần đầu trang) */
+    .hero-section {
+        background: linear-gradient(135deg, var(--pastel-pink) 0%, var(--pastel-peach) 100%);
+        padding: 80px 0;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(255, 175, 189, 0.3);
+        margin-bottom: 50px;
+    }
+
+    /* Tiêu đề Section (Có gạch chân hồng) */
+    .section-title {
+        font-weight: 800;
+        position: relative;
+        padding-bottom: 15px;
+        color: var(--text-dark);
+    }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: var(--rose-accent);
+            border-radius: 4px;
+        }
+
+    /* Tiện ích bổ sung */
+    .text-rose {
+        color: var(--rose-accent) !important;
+    }
+
+    .btn-hero-custom {
+        color: var(--rose-accent) !important;
+    }
+
+        .btn-hero-custom:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.02);
+        }
+    .customer-sidebar {
+        border-radius: 20px;
+        overflow: hidden;
+        border: none !important;
+    }
+
+        .customer-sidebar .list-group-item {
+            color: #5a4b4f;
+            border: none;
+            padding: 15px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 126, 179, 0.05);
+        }
+
+            .customer-sidebar .list-group-item:hover {
+                background-color: #fff0f3;
+                color: #ff7eb3;
+                padding-left: 25px;
+            }
+
+            .customer-sidebar .list-group-item.active {
+                background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
+                color: white;
+                font-weight: 600;
+                box-shadow: 0 5px 15px rgba(255, 175, 189, 0.4);
+            }
+
+    .modern-card {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(255, 126, 179, 0.1);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .pastel-header {
+        background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
+        color: white;
+        padding: 16px 24px;
+        border-bottom: none;
+    }
+
+    /* Nút Lọc (Filter) dạng Pill */
+    .btn-filter {
+        border-radius: 30px;
+        padding: 6px 16px;
+        color: #5a4b4f;
+        background: white;
+        border: 1px solid #ffafbd;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+        .btn-filter:hover {
+            background: #fff0f3;
+            color: #ff7eb3;
+        }
+
+        .btn-filter.active {
+            background: #ff7eb3;
+            border-color: #ff7eb3;
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 126, 179, 0.3);
+        }
+
+    /* Bảng Pastel */
+    .table-pastel th {
+        background-color: #fff0f3 !important;
+        color: #5a4b4f;
+        border-bottom: 2px solid #ffafbd;
+        font-weight: 600;
+    }
+
+    .table-pastel td {
+        vertical-align: middle;
+        border-color: rgba(255, 126, 179, 0.1);
+        color: #5a4b4f;
+    }
+
+    /* Nút chi tiết */
+    .btn-rose-outline {
+        color: #ff7eb3;
+        border: 1px solid #ff7eb3;
+        border-radius: 20px;
+        transition: all 0.3s;
+        background: transparent;
+    }
+
+        .btn-rose-outline:hover {
+            background-color: #ff7eb3;
+            color: white;
+        }
+
+    .pagination .page-link {
+        color: #ff7eb3;
+        border-radius: 50%;
+        margin: 0 4px;
+        border: none;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #ff7eb3;
+        color: white;
+        box-shadow: 0 4px 10px rgba(255, 126, 179, 0.3);
+    }
+</style>
+
+<div class="row mb-5">
+    <div class="col-md-3 mb-4 mb-md-0">
+        <div class="list-group customer-sidebar shadow-sm">
+            <a href="@Url.Action("Profile", "ShopAccount")" class="list-group-item list-group-item-action">
+                <i class="bi bi-person-heart me-2"></i> Thông tin cá nhân
+            </a>
+            <a href="@Url.Action("ChangePassword", "ShopAccount")" class="list-group-item list-group-item-action">
+                <i class="bi bi-shield-lock me-2"></i> Đổi mật khẩu
+            </a>
+            <a href="@Url.Action("Index", "Order")" class="list-group-item list-group-item-action active">
+                <i class="bi bi-bag-heart me-2"></i> Đơn hàng của tôi
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card modern-card">
+            <div class="card-header pastel-header">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i> Lịch sử đơn hàng</h5>
+            </div>
+            <div class="card-body p-4">
+
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    <a href="@Url.Action("Index", new { status = (int?)null })" class="btn btn-filter text-decoration-none @(currentStatus == null ? "active" : "")">Tất cả</a>
+                    <a href="@Url.Action("Index", new { status = 1 })" class="btn btn-filter text-decoration-none @(currentStatus == 1 ? "active" : "")">Chờ duyệt</a>
+                    <a href="@Url.Action("Index", new { status = 2 })" class="btn btn-filter text-decoration-none @(currentStatus == 2 ? "active" : "")">Đã duyệt</a>
+                    <a href="@Url.Action("Index", new { status = 3 })" class="btn btn-filter text-decoration-none @(currentStatus == 3 ? "active" : "")">Đang giao</a>
+                    <a href="@Url.Action("Index", new { status = 4 })" class="btn btn-filter text-decoration-none @(currentStatus == 4 ? "active" : "")">Hoàn tất</a>
+                    <a href="@Url.Action("Index", new { status = -1 })" class="btn btn-filter text-decoration-none @(currentStatus == -1 ? "active" : "")">Đã hủy</a>
+                </div>
+
+                @if (Model.DataItems.Count == 0)
+                {
+                    <div class="alert text-center rounded-4 py-4" style="background-color: #fff0f3; color: #ff7eb3; border: 1px dashed #ffafbd;">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        <span class="fs-5 fw-medium">Bạn chưa có đơn hàng nào.</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive rounded-4 border overflow-hidden" style="border-color: rgba(255, 126, 179, 0.2) !important;">
+                        <table class="table table-hover table-pastel mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Ngày duyệt</th>
+                                    <th class="text-end">Tổng tiền</th>
+                                    <th class="text-center">Trạng thái</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.DataItems)
+                                {
+                                    <tr>
+                                        <td class="fw-bold" style="color: #ff7eb3;">#@order.OrderID</td>
+                                        <td>@order.OrderTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@(order.AcceptTime?.ToString("dd/MM/yyyy HH:mm") ?? "--")</td>
+                                        <td class="text-end fw-bold">@order.TotalPrice.ToString("#,##0") đ</td>
+                                        <td class="text-center">
+                                            @switch (order.Status)
+                                            {
+                                                case OrderStatusEnum.New:
+                                                    <span class="badge rounded-pill bg-warning text-dark px-3 py-2">Chờ duyệt</span>
+                                                    break;
+                                                case OrderStatusEnum.Accepted:
+                                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #74b9ff;">Đã duyệt</span>
+                                                    break;
+                                                case OrderStatusEnum.Shipping:
+                                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #ffc3a0; color: #d35400;">Đang giao</span>
+                                                    break;
+                                                case OrderStatusEnum.Completed:
+                                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #55efc4; color: #00b894;">Hoàn tất</span>
+                                                    break;
+                                                case OrderStatusEnum.Cancelled:
+                                                    <span class="badge rounded-pill bg-secondary px-3 py-2">Đã hủy</span>
+                                                    break;
+                                                case OrderStatusEnum.Rejected:
+                                                    <span class="badge rounded-pill bg-danger px-3 py-2">Bị từ chối</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="@Url.Action("Detail", new { id = order.OrderID })" class="btn btn-sm btn-rose-outline px-3 rounded-pill fw-medium">
+                                                <i class="bi bi-eye"></i> Chi tiết
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (Model.PageCount > 1)
+                    {
+                        <nav class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                @for (int i = 1; i <= Model.PageCount; i++)
+                                {
+                                    <li class="page-item @(i == Model.Page ? "active" : "")">
+                                        <a class="page-link shadow-sm fw-medium" href="@Url.Action("Index", new { page = i, status = currentStatus })">@i</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
