@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using SV22T1020213.DataLayers.Interfaces;
-using SV22T1020213.Models; // Bổ sung using này để dùng chung với CryptHelper/Customer nếu cần
+using SV22T1020213.Models; 
 using SV22T1020213.Models.Common;
 using SV22T1020213.Models.Partner;
 
@@ -12,7 +12,7 @@ namespace SV22T1020213.DataLayers.SQLServer
         {
         }
 
-        // Đã cập nhật: Thêm logic password, IsLocked và CryptHelper.HashMD5
+        //  Thêm logic password, IsLocked và CryptHelper.HashMD5
         public async Task<int> AddAsync(Customer data)
         {
             using var connection = GetConnection();
