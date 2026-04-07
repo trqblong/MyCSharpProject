@@ -216,3 +216,27 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            // Lấy giá trị của 2 ô nhập liệu
+            var province = document.querySelector('select[name="deliveryProvince"]').value;
+            var address = document.querySelector('textarea[name="deliveryAddress"]').value.trim();
+
+            // Nếu 1 trong 2 ô bị trống
+            if (!province || !address) {
+                e.preventDefault(); // Chặn form gửi dữ liệu đi
+
+                // Hiển thị thông báo
+                alert('Vui lòng chọn Tỉnh/Thành phố và nhập Địa chỉ chi tiết để giao hàng!');
+
+                // Tự động trỏ chuột (focus) vào ô đang bị thiếu để khách hàng nhập
+                if (!province) {
+                    document.querySelector('select[name="deliveryProvince"]').focus();
+                } else {
+                    document.querySelector('textarea[name="deliveryAddress"]').focus();
+                }
+            }
+        });
+    </script>
+}

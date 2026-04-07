@@ -1,68 +1,90 @@
 ﻿@model SV22T1020213.Models.Catalog.Product
 @{
-    ViewBag.Title = "Thêm mặt hàng mới";
+    // Tự động thay đổi tiêu đề dựa vào ProductID giống như Controller
+    ViewBag.Title = Model?.ProductID == 0 ? "Bổ sung mặt hàng" : "Cập nhật mặt hàng";
 }
 
 @section PageToolBar {
-    <button type="submit" form="formEdit" class="btn btn-primary">
-        <i class="bi bi-save"></i> Lưu mặt hàng
+    <button type="submit" form="formEdit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+        <i class="bi bi-save me-1"></i> Lưu mặt hàng
     </button>
-    <a href="~/Product" class="btn btn-secondary">Quay lại</a>
+    <a href="~/Product" class="btn btn-light rounded-pill px-4 shadow-sm border">Quay lại</a>
 }
 
-<div class="card">
-    <div class="card-body">
-        <form id="formEdit" asp-action="Save" method="post" enctype="multipart/form-data">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="mb-3">
-                        <label asp-for="ProductName" class="form-label">Tên mặt hàng</label>
-                        <input asp-for="ProductName" class="form-control" autofocus />
+<div class="card border-0 shadow-sm rounded-4 mt-3">
+    <div class="card-body p-4 p-md-5">
+        <form id="formEdit" asp-action="SaveData" method="post" enctype="multipart/form-data">
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4 rounded-3"></div>
+
+            <input type="hidden" asp-for="ProductID" />
+
+            <div class="text-center mb-5 pb-3 border-bottom">
+                <label class="form-label fw-bold text-uppercase text-muted mb-3">Ảnh đại diện sản phẩm</label>
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative mb-3">
+                        <img id="imgPreview"
+                             src="~/images/products/@(string.IsNullOrEmpty(Model?.Photo) ? "nophoto.png" : Model.Photo)"
+                             class="img-thumbnail shadow-sm rounded-4"
+                             style="width: 220px; height: 220px; object-fit: cover;"
+                             alt="Ảnh sản phẩm" />
+                    </div>
+                    <div style="max-width: 350px; width: 100%;">
+                        <input type="file" name="uploadPhoto" class="form-control rounded-pill" accept="image/*" />
+                        <small class="text-muted d-block mt-2">Định dạng hỗ trợ: JPG, PNG, GIF</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="mb-4">
+                        <label asp-for="ProductName" class="form-label fw-semibold">Tên mặt hàng <span class="text-danger">*</span></label>
+                        <input asp-for="ProductName" class="form-control form-control-lg rounded-3" autofocus placeholder="Nhập tên sản phẩm..." />
+                        <span asp-validation-for="ProductName" class="text-danger small mt-1"></span>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="CategoryID" class="form-label">Loại hàng</label>
-                            <select asp-for="CategoryID" class="form-select"></select>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label asp-for="CategoryID" class="form-label fw-semibold">Loại hàng</label>
+                            <select asp-for="CategoryID" class="form-select rounded-3"></select>
+                            <span asp-validation-for="CategoryID" class="text-danger small mt-1"></span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="SupplierID" class="form-label">Nhà cung cấp</label>
-                            <select asp-for="SupplierID" class="form-select"></select>
+                        <div class="col-md-6">
+                            <label asp-for="SupplierID" class="form-label fw-semibold">Nhà cung cấp</label>
+                            <select asp-for="SupplierID" class="form-select rounded-3"></select>
+                            <span asp-validation-for="SupplierID" class="text-danger small mt-1"></span>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label asp-for="Unit" class="form-label">Đơn vị tính</label>
-                            <input asp-for="Unit" class="form-control" />
+                    <div class="row align-items-end mb-4">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <label asp-for="Unit" class="form-label fw-semibold">Đơn vị tính</label>
+                            <input asp-for="Unit" class="form-control rounded-3" placeholder="VD: Cái, Hộp, Chiếc..." />
+                            <span asp-validation-for="Unit" class="text-danger small mt-1"></span>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label asp-for="Price" class="form-label">Giá bán</label>
-                            <input asp-for="Price" type="text" class="form-control money-input" />
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <label asp-for="Price" class="form-label fw-semibold">Giá bán (VNĐ) <span class="text-danger">*</span></label>
+                            <input asp-for="Price" type="text" class="form-control rounded-3 money-input text-end" placeholder="0" />
+                            <span asp-validation-for="Price" class="text-danger small mt-1"></span>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label d-block">Trạng thái</label>
-                            <div class="form-check form-switch">
-                                <input asp-for="IsSelling" type="checkbox" class="form-check-input" />
-                                <label asp-for="IsSelling" class="form-check-label">Đang bán</label>
+                        <div class="col-md-4">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="form-check form-switch mb-0 d-flex align-items-center gap-2">
+                                    <input asp-for="IsSelling" type="checkbox" class="form-check-input fs-4 m-0" />
+                                    <label asp-for="IsSelling" class="form-check-label fw-semibold mt-1">Đang kinh doanh</label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="ProductDescription" class="form-label">Mô tả</label>
-                        <textarea asp-for="ProductDescription" class="form-control" rows="4"></textarea>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Ảnh đại diện</label>
-                    <input type="file" name="PhotoFile" class="form-control" accept="image/*" />
-                    <div class="mt-2 text-center">
-                        <img id="imgPreview" src="~/images/products/nophoto.png" class="img-thumbnail" style="max-height:200px;" />
+                        <label asp-for="ProductDescription" class="form-label fw-semibold">Mô tả sản phẩm</label>
+                        <textarea asp-for="ProductDescription" class="form-control rounded-3" rows="5" placeholder="Nhập mô tả chi tiết về sản phẩm này..."></textarea>
                     </div>
                 </div>
             </div>
+
         </form>
     </div>
 </div>
@@ -70,15 +92,43 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // Preview ảnh
-        $("input[name='PhotoFile']").change(function () {
-            if (this.files && this.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    $("#imgPreview").attr("src", e.target.result);
+        $(document).ready(function () {
+            // Preview ảnh mượt mà
+            $("input[name='uploadPhoto']").change(function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        // Thêm hiệu ứng mờ nhạt (fade) khi đổi ảnh
+                        $("#imgPreview").hide().attr("src", e.target.result).fadeIn(300);
+                    }
+                    reader.readAsDataURL(this.files[0]);
                 }
-                reader.readAsDataURL(this.files[0]);
+            });
+
+            // Hàm format tiền tệ (thêm dấu phẩy)
+            function formatNumber(n) {
+                // Xóa tất cả các ký tự không phải số, sau đó thêm dấu phẩy phân cách hàng nghìn
+                return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
+
+            // Xử lý ô nhập giá bán
+            document.querySelectorAll(".money-input").forEach(input => {
+                input.addEventListener("input", function () {
+                    let cursorPosition = this.selectionStart;
+                    let originalLength = this.value.length;
+
+                    this.value = formatNumber(this.value);
+
+                    let newLength = this.value.length;
+                    cursorPosition += newLength - originalLength;
+                    this.setSelectionRange(cursorPosition, cursorPosition);
+                });
+
+                // Format giá trị ngay khi trang vừa load xong (trường hợp edit mặt hàng cũ)
+                if (input.value) {
+                    input.value = formatNumber(input.value);
+                }
+            });
         });
     </script>
 }

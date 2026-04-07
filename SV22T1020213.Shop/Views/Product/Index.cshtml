@@ -185,7 +185,7 @@
                         <label class="form-label fw-bold text-muted small text-uppercase">Giá từ</label>
                         <div class="input-group shadow-sm rounded-pill overflow-hidden">
                             <span class="input-group-text bg-white border-end-0 text-muted" style="border-color: #dee2e6;">Từ</span>
-                            <input type="number" name="MinPrice" class="form-control border-start-0" style="border-color: #dee2e6; color: #5a4b4f;" value="@Model.SearchInput.MinPrice" />
+                            <input type="text" name="MinPrice" class="form-control border-start-0 money-input" style="border-color: #dee2e6; color: #5a4b4f;" value="@Model.SearchInput.MinPrice" />
                         </div>
                     </div>
 
@@ -193,12 +193,15 @@
                         <label class="form-label fw-bold text-muted small text-uppercase">Đến</label>
                         <div class="input-group shadow-sm rounded-pill overflow-hidden">
                             <span class="input-group-text bg-white border-end-0 text-muted" style="border-color: #dee2e6;">Đến</span>
-                            <input type="number" name="MaxPrice" class="form-control border-start-0" style="border-color: #dee2e6; color: #5a4b4f;" value="@Model.SearchInput.MaxPrice" />
+                            <input type="text" name="MaxPrice" class="form-control border-start-0 money-input" style="border-color: #dee2e6; color: #5a4b4f;" value="@Model.SearchInput.MaxPrice" />
                         </div>
                     </div>
 
                     <div class="col-lg-3 col-md-8">
                         <label class="form-label fw-bold text-muted small text-uppercase">Từ khóa</label>
+
+
+
                         <input type="text" name="SearchValue" class="form-control rounded-pill shadow-sm" style="color: #5a4b4f;" value="@Model.SearchInput.SearchValue" placeholder="Nhập tên sản phẩm..." />
                     </div>
 
@@ -219,10 +222,14 @@
 
 @section Scripts {
     <script>
+        // 1. Hàm định dạng tiền tệ (thêm dấu phẩy)
+        function formatNumber(n) {
+            return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
         function paginationSearch(e, form, page) {
             if (e) e.preventDefault();
 
-            // 1. Tự động rà soát form (nếu truyền vào null thì lấy form đầu tiên)
             var actualForm = form || document.getElementById("formSearch") || document.querySelector("form");
             if (!actualForm) {
                 alert("Lỗi Dev: Không tìm thấy Form bộ lọc nào trong HTML!");
@@ -231,18 +238,21 @@
 
             var url = $(actualForm).attr('action') || '@Url.Action("SearchProduct", "Product")';
             var method = $(actualForm).attr('method') || 'GET';
-
-            // 2. Tự động rà soát khung hiển thị
             var targetId = $(actualForm).data('target') || 'searchResult';
             var targetDiv = $('#' + targetId);
 
-            if (targetDiv.length === 0) {
-                alert("Lỗi Dev: Không tìm thấy thẻ <div id='" + targetId + "'> để đổ sản phẩm vào!");
-                return;
-            }
+            if (targetDiv.length === 0) return;
 
-            // Lấy dữ liệu và gọi AJAX
+            // Lấy dữ liệu từ form
             var searchData = $(actualForm).serializeArray();
+
+            // BƯỚC QUAN TRỌNG: Lặp qua mảng dữ liệu, xóa dấu phẩy của MinPrice và MaxPrice trước khi gửi về Server
+            searchData.forEach(function(item) {
+                if (item.name === "MinPrice" || item.name === "MaxPrice") {
+                    item.value = item.value.replace(/,/g, ''); // Xóa tất cả dấu phẩy
+                }
+            });
+
             searchData.push({ name: "Page", value: page });
 
             var currentHeight = targetDiv.height();
@@ -269,17 +279,37 @@
         }
 
         $(document).ready(function () {
-            // Lấy trang hiện tại
+            // 2. Định dạng lại ô nhập tiền ngay khi trang tải xong
+            $('.money-input').each(function () {
+                let val = $(this).val();
+                if (val && val !== "0") {
+                    $(this).val(formatNumber(val));
+                } else if (val === "0") {
+                    $(this).val(""); // Nếu giá trị bằng 0 thì xóa trắng cho giao diện đẹp hơn
+                }
+            });
+
+            // 3. Xử lý sự kiện khi người dùng gõ phím vào ô nhập tiền
+            $(document).on('input', '.money-input', function () {
+                let cursorPosition = this.selectionStart;
+                let originalLength = this.value.length;
+
+                this.value = formatNumber(this.value);
+
+                // Giữ nguyên vị trí con trỏ chuột khi tự động thêm dấu phẩy
+                let newLength = this.value.length;
+                cursorPosition += newLength - originalLength;
+                this.setSelectionRange(cursorPosition, cursorPosition);
+            });
+
             var currentPage = @Model.SearchInput.Page;
             var searchForm = document.getElementById("formSearch") || document.querySelector("form");
 
-            // BỔ SUNG: Bắt sự kiện submit của form để lọc bằng AJAX
             $(searchForm).on('submit', function (e) {
-                e.preventDefault(); // Chặn hành vi tải lại trang mặc định
-                paginationSearch(e, this, 1); // Khi bấm nút Lọc thì luôn reset kết quả về trang 1
+                e.preventDefault();
+                paginationSearch(e, this, 1);
             });
 
-            // Gọi AJAX lần đầu tiên khi mở trang
             paginationSearch(null, searchForm, currentPage);
 
             // Nút Thêm vào giỏ hàng

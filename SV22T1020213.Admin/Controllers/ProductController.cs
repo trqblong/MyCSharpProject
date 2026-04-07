@@ -17,34 +17,30 @@ namespace SV22T1020213.Admin.Controllers
         public IActionResult Index()
         {
             var input = ApplicationContext.GetSessionData<ProductSearchInput>(SEARCH_PRODUCT);
-
             if (input == null)
             {
                 input = new ProductSearchInput()
                 {
                     Page = 1,
-                    PageSize = ApplicationContext.PageSize,
+                    PageSize = 10, // Số dòng hiển thị
                     SearchValue = "",
                     CategoryID = 0,
                     SupplierID = 0,
-                    MinPrice = null,
-                    MaxPrice = null
+                    MinPrice = 0, // Khởi tạo khoảng giá mặc định
+                    MaxPrice = 0
                 };
             }
-
             return View(input);
         }
 
-        /// <summary>
-        /// Tìm kiếm + phân trang
-        /// </summary>
         public async Task<IActionResult> Search(ProductSearchInput input)
         {
-            var result = await CatalogDataService.ListProductsAsync(input);
+            var data = await CatalogDataService.ListProductsAsync(input);
 
+            // Lưu lại Session để giữ trạng thái tìm kiếm
             ApplicationContext.SetSessionData(SEARCH_PRODUCT, input);
 
-            return View(result);
+            return View(data);
         }
 
         // Product/Create

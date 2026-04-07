@@ -1,8 +1,8 @@
 ﻿@model SV22T1020213.Models.Catalog.Product
 @{
     ViewData["Title"] = Model.ProductName;
-    var attributes = ViewBag.Attributes as List<SV22T1020213.Models.Catalog.ProductAttribute>;
-    var photos = ViewBag.Photos as List<SV22T1020213.Models.Catalog.ProductPhoto>;
+    var photos = ViewBag.Photos as IEnumerable<SV22T1020213.Models.Catalog.ProductPhoto> ?? new List<SV22T1020213.Models.Catalog.ProductPhoto>();
+    var attributes = ViewBag.Attributes as IEnumerable<SV22T1020213.Models.Catalog.ProductAttribute> ?? new List<SV22T1020213.Models.Catalog.ProductAttribute>();
 }
 
 <style>
@@ -137,19 +137,23 @@
         <div class="card modern-card p-3 sticky-top" style="top: 20px; z-index: 1;">
             <div class="card-body text-center p-0">
                 <div class="rounded-4 overflow-hidden mb-3" style="border: 1px solid rgba(255,126,179,0.1);">
-                    <img id="mainImage" src="~/images/products/@Model.Photo" class="img-fluid w-100" style="object-fit: cover; max-height: 400px;" alt="@Model.ProductName">
+                    <img id="mainImage"
+                         src="~/images/products/@(string.IsNullOrEmpty(Model.Photo) ? "nophoto.png" : Model.Photo)"
+                         class="img-fluid w-100" style="object-fit: cover; max-height: 400px;" alt="@Model.ProductName">
                 </div>
 
-                @if (photos != null && photos.Any())
+                @if (photos.Any(p => !p.IsHidden))
                 {
                     <div class="row g-2">
-                        @foreach (var photo in photos.Where(p => !p.IsHidden).Take(4))
+                        @foreach (var photo in photos.Where(p => !p.IsHidden).OrderBy(p => p.DisplayOrder).Take(4))
                         {
                             <div class="col-3">
                                 <img src="~/images/products/@photo.Photo"
-                                     class="img-fluid product-thumb shadow-sm"
-                                     style="cursor:pointer; height:70px; width:100%; object-fit:cover"
-                                     onclick="$('#mainImage').attr('src', '~/images/products/@photo.Photo')" />
+                                     class="img-fluid product-thumb shadow-sm rounded-3"
+                                     style="cursor:pointer; height:70px; width:100%; object-fit:cover; transition: 0.2s;"
+                                     onmouseover="this.style.opacity='0.8'"
+                                     onmouseout="this.style.opacity='1'"
+                                     onclick="$('#mainImage').attr('src', '/images/products/@photo.Photo')" />
                             </div>
                         }
                     </div>

@@ -186,30 +186,33 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-4">
-                            <label asp-for="ContactName" class="form-label">Tên giao dịch</label>
+                            <label asp-for="ContactName" class="form-label">Tên giao dịch <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 rounded-start-4"><i class="bi bi-building text-muted"></i></span>
-                                <input asp-for="ContactName" class="form-control border-start-0" />
+                                <input asp-for="ContactName" class="form-control border-start-0" placeholder="Nhập tên giao dịch..." />
                             </div>
+                            <span asp-validation-for="ContactName" class="text-danger small mt-1 d-block"></span>
                         </div>
 
                         <div class="col-md-6 mb-4">
-                            <label asp-for="Phone" class="form-label">Số điện thoại</label>
+                            <label asp-for="Phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 rounded-start-4"><i class="bi bi-telephone text-muted"></i></span>
-                                <input asp-for="Phone" class="form-control border-start-0" placeholder="0123 456 789" />
+                                <input asp-for="Phone" type="tel" class="form-control border-start-0" placeholder="0123 456 789" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
                             </div>
+                            <span asp-validation-for="Phone" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="Province" class="form-label">Tỉnh / Thành phố</label>
+                        <label asp-for="Province" class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0 rounded-start-4"><i class="bi bi-geo-alt text-muted"></i></span>
                             <select asp-for="Province" class="form-select border-start-0" asp-items="await SelectListHelper.Provinces()">
                                 <option value="">-- Chọn tỉnh/thành phố --</option>
                             </select>
                         </div>
+                        <span asp-validation-for="Province" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="mb-4">
@@ -229,3 +232,6 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

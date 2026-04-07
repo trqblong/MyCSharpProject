@@ -18,7 +18,7 @@
               method="get"
               action="~/Product/Search"
               data-target="searchResult"
-              onsubmit="paginationSearch(event, this, 1)">
+              >
 
             <input type="hidden" asp-for="PageSize" />
 
@@ -77,24 +77,19 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            paginationSearch(null, document.getElementById("formSearch"), @Model.Page);
+            // Chạy lần đầu khi load trang
+            doSearch(1);
         });
-            // ==============================
-        // Format số tiền có dấu . hàng nghìn
-        // ==============================
 
+        // Hàm định dạng số có dấu chấm
         function formatNumber(value) {
-            // bỏ ký tự không phải số
             value = value.replace(/\D/g, "");
-
-            // thêm dấu . phân cách nghìn
             return value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
 
+        // Bắt sự kiện gõ phím để thêm dấu chấm
         document.querySelectorAll(".money-input").forEach(input => {
-
             input.addEventListener("input", function () {
-
                 let cursorPosition = this.selectionStart;
                 let originalLength = this.value.length;
 
@@ -102,24 +97,31 @@
 
                 let newLength = this.value.length;
                 cursorPosition += newLength - originalLength;
-
                 this.setSelectionRange(cursorPosition, cursorPosition);
             });
-
         });
 
+        // Bắt sự kiện submit của form
+        document.getElementById("formSearch").addEventListener("submit", function (e) {
+            e.preventDefault(); // Chặn hành vi submit mặc định
+            doSearch(1);        // Gọi hàm tìm kiếm từ trang 1
+        });
 
-        // ==============================
-        // Khi submit form -> bỏ dấu .
-        // ==============================
-
-        document.getElementById("formSearch").addEventListener("submit", function () {
-
+        // Hàm xử lý tìm kiếm
+        function doSearch(page) {
+            // 1. Xóa dấu chấm của 2 ô input giá trước
             document.querySelectorAll(".money-input").forEach(input => {
                 input.value = input.value.replace(/\./g, "");
             });
 
-        });
+            // 2. Lấy Form và gọi hàm AJAX phân trang
+            var frmSearch = document.getElementById("formSearch");
+            paginationSearch(null, frmSearch, page);
 
+            // 3. Phục hồi lại dấu chấm để hiển thị cho người dùng xem
+            document.querySelectorAll(".money-input").forEach(input => {
+                input.value = formatNumber(input.value);
+            });
+        }
     </script>
 }

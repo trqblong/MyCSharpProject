@@ -28,14 +28,18 @@ namespace SV22T1020213.Shop.Models
         [Display(Name = "Xác nhận mật khẩu")]
         public string ConfirmPassword { get; set; } = string.Empty;
 
+        // BỔ SUNG: Bắt buộc nhập và bắt buộc phải là số
         [Display(Name = "Điện thoại")]
-        [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+        [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+        [RegularExpression(@"^[0-9]+$", ErrorMessage = "Số điện thoại chỉ được phép nhập số")]
         public string? Phone { get; set; }
 
         [Display(Name = "Địa chỉ")]
         public string? Address { get; set; }
 
+        // BỔ SUNG: Bắt buộc chọn tỉnh/thành phố
         [Display(Name = "Tỉnh/Thành phố")]
+        [Required(ErrorMessage = "Vui lòng chọn Tỉnh/Thành phố")]
         public string? Province { get; set; }
     }
 
@@ -59,7 +63,9 @@ namespace SV22T1020213.Shop.Models
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 
-    public class UpdateProfileViewModel
+   
+
+public class UpdateProfileViewModel
     {
         public int CustomerID { get; set; }
 
@@ -67,6 +73,8 @@ namespace SV22T1020213.Shop.Models
         [Display(Name = "Tên khách hàng")]
         public string CustomerName { get; set; } = string.Empty;
 
+        // BỔ SUNG: Bắt buộc nhập tên giao dịch
+        [Required(ErrorMessage = "Vui lòng nhập tên giao dịch")]
         [Display(Name = "Tên giao dịch")]
         public string ContactName { get; set; } = string.Empty;
 
@@ -75,13 +83,17 @@ namespace SV22T1020213.Shop.Models
         [Display(Name = "Email")]
         public string Email { get; set; } = string.Empty;
 
+        // BỔ SUNG: Bắt buộc nhập sđt và chỉ cho phép số
+        [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+        [RegularExpression(@"^[0-9]+$", ErrorMessage = "Số điện thoại chỉ được phép nhập số")]
         [Display(Name = "Điện thoại")]
-        [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
         public string? Phone { get; set; }
 
         [Display(Name = "Địa chỉ")]
         public string? Address { get; set; }
 
+        // BỔ SUNG: Bắt buộc chọn tỉnh/thành
+        [Required(ErrorMessage = "Vui lòng chọn Tỉnh/Thành phố")]
         [Display(Name = "Tỉnh/Thành phố")]
         public string? Province { get; set; }
     }
